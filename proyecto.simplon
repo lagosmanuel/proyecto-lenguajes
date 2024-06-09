@@ -41,10 +41,10 @@
 
 %%%-------------Codigo de Incializacion (Llamada a main)------------------------
 %%% Llama a main y finaliza
-        SetD Libre, pc+5          @PTR                        
-        SetD Libre+1, actual      @ED                        
+        SetD Libre, PC+5          @PTR                        
+        SetD Libre+1, Actual      @ED                        
         SetActual Libre                                       
-        SetLibre Actual+6                                              % aca si sabes el tamano del RA porque main es static
+        SetLibre Actual+6                                              
         Jump main                                            
 
         Halt                                               
@@ -59,13 +59,13 @@ consA   SetH D[Actual+2]+1, 1     @v1=1
 %%%-----------------------------------------------------------------------------
 
 %%%--------------------Traduccion de m1A de la clase A---------------------------
-m1A     SetLibre Libre+1                                               % debo incrementar libre para guardar la variable local? como sabe el llamador el tamanio del RA?
+m1A     SetLibre Libre+1                                               
         SetD Actual+3, 0                                                @i=0                
 for     JumpT fend, D[Actual+3] >= (H[D[Actual+2]+1]+H[D[Actual+2]+2])  @i>=v1+v2?
         SetH D[Actual+2]+1, H[D[Actual+2]+1]+D[Actual+3]                @v1+=i
         SetH D[Actual+2]+2, H[D[Actual+2]+2]-D[Actual+3]                @v2-=i
         JumpT fend, (H[D[Actual+2]+1]+H[D[Actual+2]+2]) >= 100          @v1+v2>=100?
-        SetD Actual+3, D[Actual+3]+1                                    @++i
+        SetD Actual+3, D[Actual+3]+1                                    @i++
         Jump for
 fend    SetD CRA, D[CRA]+1                                              @a1=a1+1
 
@@ -90,7 +90,7 @@ consB   SetD Libre, PC+6              @PTR
         SetD Libre+1, Actual          @ED
         SetD Libre+2, D[Actual+2]     @This
         SetActual Libre
-        SetLibre Libre+3                             % este si sabe el tamanio de RA, si hubera variables locales en el constructor, quien incrementaria libre?
+        SetLibre Libre+3                             
         Jump consA
     
         SetH D[Actual+2]+3, D[CRA]*3  @v3=a1*3
@@ -100,7 +100,7 @@ consB   SetD Libre, PC+6              @PTR
 %%%-----------------------------------------------------------------------------
 
 %%%--------------------Traduccion de m1B de la clase B -----------------
-m1B     SetLibre Libre+1                             % debo incrementar libre? como sabe el llamador cuanto pesa el RA?
+m1B     SetLibre Libre+1                             
         SetD Actual+3, 0                             @j=0  
         JumpT case3, (D[CRA]>=1) & (D[CRA]<=3)
         JumpT case6, (D[CRA]>=4) & (D[CRA]<=6)
@@ -117,7 +117,7 @@ break   SetLibre Libre+1              @rtn
         SetD Libre+2, D[Actual+2]     @This
         SetD Libre+3, D[Actual+3]     @x=j
         SetActual Libre
-        SetLibre Libre+4                            % no se el tamanio del RA de super.m1(j)
+        SetLibre Libre+4                            
         Jump D[VTA+1]             % salto a super.m1(j)
 
         SetD Actual-1, D[Libre-1]     @rtn super.m1(j)
@@ -127,7 +127,7 @@ break   SetLibre Libre+1              @rtn
 %%%-----------------------------------------------------------------------------
 
 %%%--------------------Traduccion de m2B de la clase B --------------------------
-m2B     SetD CRA, D[CRA]+1           @a1=a1+1                        
+m2B     SetD CRA, D[CRA]+1                                                     @a1=a1+1                        
 
     %% evaluar (v3+a1)
         SetD Libre, (H[D[Actual+2]+3]+D[CRA])                                  @v3+a1
@@ -151,7 +151,7 @@ m2B     SetD CRA, D[CRA]+1           @a1=a1+1
         SetLibre Libre+3
         Jump D[H[D[Actual+2]+0]+0]                 % salto a this.m1
 
-        SetD Actual-1, D[Libre-3] + D[Libre-2] + D[Libre-1]     @rtn (v3+a1) + super.m1()+ this.m1();
+        SetD Actual-1, D[Libre-3] + D[Libre-2] + D[Libre-1]                    @rtn (v3+a1) + super.m1()+ this.m1();
         SetLibre Actual
         SetActual D[Libre+1]
         Jump D[Libre]
@@ -163,7 +163,7 @@ consC   SetD Libre, PC+6                                            @PTR
         SetD Libre+1, Actual                                        @ED
         SetD Libre+2, D[Actual+2]                                   @This
         SetActual Libre
-        SetLibre Libre+3                        % este si sabe el tamanio de RA, si hubera variables locales en el constructor, quien incrementaria libre?
+        SetLibre Libre+3                        
         Jump consB
     
         SetH D[Actual+2]+4, D[Actual+3]+1                           @v4=x+1
