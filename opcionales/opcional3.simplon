@@ -1,0 +1,119 @@
+
+%%%--------------------Creacion de VTs------------------------------------------ 
+%%% Carga la VT de la clase Principal
+        SetLabel VTPrincipal, Libre     
+        SetLibre Libre+1 
+        SetActual Libre                                        
+
+%%% Carga la VT de la clase A
+        SetLabel VTA, Libre                                   
+        SetD Libre+0, m1                @VTA: direccion de m1
+        SetLibre Libre+1                                   
+        SetActual Libre                                   
+
+%%% Carga la VT de la clase B
+        SetLabel VTB, Libre                                   
+        SetD Libre+0, m2                @VTB: direccion de m2
+        SetLibre Libre+1                                   
+        SetActual Libre                                   
+%%%-----------------------------------------------------------------------------
+
+%%%-------------Codigo de Incializacion (Llamada a main)------------------------
+%%% Llama a main y finaliza
+        SetD Libre, PC+5          @PTR                        
+        SetD Libre+1, Actual      @ED                        
+        SetActual Libre                                       
+        SetLibre Actual+6                                              
+        Jump main                                            
+
+        Halt                                               
+%%%-----------------------------------------------------------------------------
+
+%%%--------------------Traduccion del constructor de la clase A-----------------
+ConsA   SetH D[Actual+2]+1, D[Actual+3]+100                 @v1=x+100
+
+        SetLibre Actual                                
+        SetActual D[Libre+1]                            
+        Jump D[Libre]                                 
+%%%-----------------------------------------------------------------------------
+
+
+%%%--------------------Traduccion del me'todo m1 de la clase A-----------------
+m1      SetD Actual-1, H[D[Actual+2]+1]+1                  @rtn v1+1
+
+        SetLibre Actual                                
+        SetActual D[Libre+1]                            
+        Jump D[Libre]                                 
+%%%-----------------------------------------------------------------------------
+
+%%%--------------------Traduccion del constructor de la clase B-----------------
+ConsB   SetH D[Actual+2]+1, 0                              @v1=0
+
+        SetLibre Actual                                
+        SetActual D[Libre+1]                            
+        Jump D[Libre]                                 
+%%%-----------------------------------------------------------------------------
+
+
+%%%--------------------Traduccion del me'todo m2 de la clase B-----------------
+    %% crear un objeto de tipo A
+m2      SetLibre Libre+1                                  
+        SetD Actual+3, PO                                  @o1=new A(v1)
+        SetH PO, VTA                                       @VTA
+        SetPO PO+2
+    
+    %% llamar al constructor de A
+        SetD Libre, PC+7                                   @PTR
+        SetD Libre+1, Actual                               @ED
+        SetD Libre+2, D[Actual+3]                          @This
+        SetD Libre+3, H[D[Actual+2]+1]                     @x=v1
+        SetActual Libre
+        SetLibre Libre+4
+        Jump ConsA
+
+        SetD Actual-1, D[Actual+3]                        @rtn o1
+        SetLibre Actual                                
+        SetActual D[Libre+1]                            
+        Jump D[Libre]                                 
+%%%-----------------------------------------------------------------------------
+
+%%%--------------------Traduccion de la clase Main------------------------------
+
+    %% crear objeto de tipo B
+main    SetD Actual+3, PO                                 @obj=new B()
+        SetH PO, VTB                                      @VTB
+        SetPO PO+2
+    
+    %% llamar al constructor de B
+        SetD Libre, PC+6                                  @PTR
+        SetD Libre+1, Actual                              @ED
+        SetD Libre+2, D[Actual+3]                         @This
+        SetActual Libre
+        SetLibre Libre+3
+        Jump ConsB
+
+    %% llamar a obj.m2()
+        SetLibre Libre+1                                  @rtn
+        SetD Libre, PC+6                                  @PTR
+        SetD Libre+1, Actual                              @ED
+        SetD Libre+2, D[Actual+3]                         @This
+        SetActual Libre
+        SetLibre Libre+3
+        Jump D[H[D[Actual+2]+0]+0]
+
+    %% llamar a (obj.m2()).m1()
+        SetLibre Libre+1                                  @rtn
+        SetD Libre, PC+6                                  @PTR
+        SetD Libre+1, Actual                              @ED
+        SetD Libre+2, D[Libre-2]                          @This (obj.m2())
+        SetActual Libre
+        SetLibre Libre+3
+        Jump D[H[D[Actual+2]+0]+0]
+
+        SetOut D[Libre-1]
+        SetLibre Libre-2
+
+        SetLibre Actual
+        SetActual D[Libre+1]
+        Jump D[Libre]
+%%%-----------------------------------------------------------------------------
