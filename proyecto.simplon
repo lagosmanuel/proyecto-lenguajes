@@ -173,7 +173,6 @@ consC   SetD Libre, PC+6                                            @PTR
         SetH D[Actual+2]+5, (H[D[Actual+2]+1]+H[D[Actual+2]+2])*3   @v5=(v1+v2)*3
         
     %% crear un objeto de tipo A
-        SetLabel o1, PO
         SetH D[Actual+2]+6, PO                                      @o1=new A()
         SetH PO, VTA                                                @VTA
         SetPo PO+3
