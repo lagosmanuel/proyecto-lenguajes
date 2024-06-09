@@ -1,0 +1,90 @@
+%%%--------------------Creacion de VTs------------------------------------------ 
+%%% Carga la VT de la clase Principal
+        SetLabel VTPrincipal, Libre     @VTPrincipal
+        SetLibre Libre+1                                        
+        SetActual Libre                                        
+
+%%% Carga la VT de la clase A
+        SetLabel VTA, Libre                                   
+        SetD Libre+0, m1                @VTA: direccion de m1
+        SetLibre Libre+1                                   
+        SetActual Libre                                   
+%%%-----------------------------------------------------------------------------
+
+%%%-----------------------------------------------------------------------------
+    %% Reservar la direcci'on 0 para la referencia nula
+        SetPO PO                  @NULL
+        SetPO PO+1
+%%%-----------------------------------------------------------------------------
+
+%%%-------------Codigo de Incializacion (Llamada a main)------------------------
+%%% Llama a main y finaliza
+        SetD Libre, PC+5          @PTR                        
+        SetD Libre+1, Actual      @ED                        
+        SetActual Libre                                       
+        SetLibre Actual+6                                              
+        Jump main                                            
+
+        Halt                                               
+%%%-----------------------------------------------------------------------------
+
+%%%--------------------Traduccion del constructor de la clase A-----------------
+ConsA   SetH D[Actual+2]+1, 3                                @v1=3
+        SetH D[Actual+2]+2, 2                                @v2=2
+
+        SetLibre Actual                                
+        SetActual D[Libre+1]                            
+        Jump D[Libre]                                 
+%%%-----------------------------------------------------------------------------
+
+
+%%%--------------------Traduccion del me'todo m1 de la clase A-----------------
+m1      SetD Actual-1, H[D[Actual+2]+1]+H[D[Actual+2]+2]    @rtn v1
+
+        SetLibre Actual                                
+        SetActual D[Libre+1]                            
+        Jump D[Libre]                                 
+%%%-----------------------------------------------------------------------------
+
+%%%--------------------Traduccion de la clase Main------------------------------
+
+    %% declarar variable oA de tipo A
+main    SetD Actual+3, 0
+
+    %% crear objeto de tipo A
+    %%  SetD Actual+3, PO                                  @oA=new A()
+    %%  SetH PO, VTA                                       @VTA
+    %%  SetPO PO+3
+    
+    %% llamar al constructor de A
+    %% SetD Libre, PC+6                                  @PTR
+    %% SetD Libre+1, Actual                              @ED
+    %% SetD Libre+2, D[Actual+3]                         @This
+    %% SetActual Libre
+    %% SetLibre Libre+3
+    %% Jump ConsA
+
+    %% verificar la referencia de oA
+        JumpT error, D[Actual+3] == 0
+
+    %% llamar a oA.m1()
+        SetLibre Libre+1                                  @rtn
+        SetD Libre, PC+6                                  @PTR
+        SetD Libre+1, Actual                              @ED
+        SetD Libre+2, D[Actual+3]                         @This
+        SetActual Libre
+        SetLibre Libre+3
+        Jump D[H[D[Actual+2]+0]+0]
+    
+        SetOut D[Libre-1]
+        SetLibre Libre-1
+    
+        SetLibre Actual
+        SetActual D[Libre+1]
+        Jump D[Libre]
+%%%-----------------------------------------------------------------------------
+
+%%%-----------------------------------------------------------------------------
+error   SetOut 1
+        halt
+%%%-----------------------------------------------------------------------------
