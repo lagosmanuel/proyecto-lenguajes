@@ -115,10 +115,10 @@ break   SetLibre Libre+1              @rtn
         SetD Libre, PC+7              @PTR
         SetD Libre+1, Actual          @ED
         SetD Libre+2, D[Actual+2]     @This
-        SetD Libre+3, D[Actual+3]     @j
+        SetD Libre+3, D[Actual+3]     @x=j
         SetActual Libre
         SetLibre Libre+4                            % no se el tamanio del RA de super.m1(j)
-        Jump D[D[H[D[Actual+2]+0]+3]+1]             % salto a super.m1(j)
+        Jump D[VTA+1]             % salto a super.m1(j)
 
         SetD Actual-1, D[Libre-1]     @rtn super.m1(j)
         SetLibre Actual
@@ -129,16 +129,21 @@ break   SetLibre Libre+1              @rtn
 %%%--------------------Traduccion de m2B de la clase B --------------------------
 m2B     SetD CRA, D[CRA]+1           @a1=a1+1                        
 
+    %% evaluar (v3+a1)
+        SetD Libre, (H[D[Actual+2]+3]+D[CRA])                                  @v3+a1
+        SetLibre Libre+1
+
     %% llamar a super.m1()
-        SetD Libre, PC+7                                                       @PTR
+        SetLibre Libre+1                                                       @rtn1
+        SetD Libre, PC+6                                                       @PTR
         SetD Libre+1, Actual                                                   @ED
         SetD Libre+2, D[Actual+2]                                              @This
         SetActual Libre
         SetLibre Libre+3
-        SetOut D[D[H[D[Actual+2]+0]+3]+0]          % ESTOY DEBBUGEANDO POR ACA
-        Jump D[D[H[D[Actual+2]+0]+3]+0]            % salto a super.m1()
+        Jump D[VTA+0]            % salto a super.m1()
 
     %% llamar a this.m1()
+        SetLibre Libre+1                                                       @rtn2
         SetD Libre, PC+6                                                       @PTR
         SetD Libre+1, Actual                                                   @ED
         SetD Libre+2, D[Actual+2]                                              @This
@@ -146,7 +151,7 @@ m2B     SetD CRA, D[CRA]+1           @a1=a1+1
         SetLibre Libre+3
         Jump D[H[D[Actual+2]+0]+0]                 % salto a this.m1
 
-        SetD Actual-1, (H[D[Actual+2]+3]+D[CRA]) + D[Libre-2] + D[Libre-1]     @rtn (v3+a1) + super.m1()+ this.m1();
+        SetD Actual-1, D[Libre-3] + D[Libre-2] + D[Libre-1]     @rtn (v3+a1) + super.m1()+ this.m1();
         SetLibre Actual
         SetActual D[Libre+1]
         Jump D[Libre]
@@ -274,17 +279,17 @@ main    SetIn Actual+3                                     @read x1
         SetD Libre, PC+7                                  @PTR
         SetD Libre+1, Actual                              @ED
         SetD Libre+2, oA                                  @This
-        SetD Libre+3, D[Actual+3]+D[Actual+4]             @x1+x2
+        SetD Libre+3, D[Actual+3]+D[Actual+4]             @x=x1+x2
         SetActual Libre
         SetLibre Libre+4
         Jump ConsC
 
     %% llamar a oA.m1(x1*x2)
-        SetLibre Libre+1
+        SetLibre Libre+1                                  @rtn1
         SetD Libre, PC+7                                  @PTR
         SetD Libre+1, Actual                              @ED
         SetD Libre+2, oA                                  @This
-        SetD Libre+3, D[Actual+3]*D[Actual+4]             @x1*x2
+        SetD Libre+3, D[Actual+3]*D[Actual+4]             @x=x1*x2
         SetActual Libre
         SetLibre Libre+4
         Jump D[H[oA+0]+1]
@@ -294,7 +299,7 @@ main    SetIn Actual+3                                     @read x1
         SetLibre Libre-1
 
     %% llamar a oA.m2()
-        SetLibre Libre+1
+        SetLibre Libre+1                                  @rtn1
         SetD Libre, PC+6                                  @PTR
         SetD Libre+1, Actual                              @ED
         SetD Libre+2, oA                                  @This
@@ -303,11 +308,11 @@ main    SetIn Actual+3                                     @read x1
         Jump D[H[oA+0]+2]
 
     %% llamar a oA.m2(x1)
-        SetLibre Libre+1
+        SetLibre Libre+1                                  @rtn2
         SetD Libre, PC+7                                  @PTR
         SetD Libre+1, Actual                              @ED
         SetD Libre+2, oA                                  @This
-        SetD Libre+3, D[Actual+3]                         @x1
+        SetD Libre+3, D[Actual+3]                         @x=x1
         SetActual Libre
         SetLibre Libre+4
         Jump D[H[oA+0]+3]
