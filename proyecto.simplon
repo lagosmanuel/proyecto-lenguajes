@@ -1,0 +1,262 @@
+%%%--------------------Creacion de Class Records-------------------------------- 
+%%% Carga la VT de la clase A
+        SetLabel CRA, Libre       @a1
+        SetLibre Libre+1
+        SetActual Libre
+%%%-----------------------------------------------------------------------------
+
+%%%--------------------Creacion de VTs------------------------------------------ 
+%%% Carga la VT de la clase Principal
+        SetLabel VTPrincipal, Libre                             
+        SetLibre Libre+1                                        
+        SetActual Libre                                        
+
+%%% Carga la VT de la clase A
+        SetLabel VTA, Libre                                   
+        SetD Libre+0, m1A         @VTA: direccion de m1A       
+        SetD Libre+1, m1xA        @VTA: direccion de m1xA     
+        SetLibre Libre+2                                   
+        SetActual Libre                                   
+
+%%% Carga la VT de la clase B
+        SetLabel VTB, Libre                                     
+        SetD Libre+0, m1B         @VTB: direccion de m1B         
+        SetD Libre+1, m1xA        @VTB: direccion de m1xA       
+        SetD Libre+2, m2B         @VTB: direccion de m2B       
+        SetD Libre+3, VTA         @VTB: direccion de VTA      
+        SetLibre Libre+4                                     
+        SetActual Libre                                           
+
+%%% Carga la VT de la clase C
+        SetLabel VTC, Libre                                     
+        SetD Libre+0, m1B         @VTC: direccion de m1B         
+        SetD Libre+1, m1xC        @VTC: direccion de m1xC       
+        SetD Libre+2, m2B         @VTC: direccion de m2B       
+        SetD Libre+3, m2xC        @VTC: direccion de m2xC     
+        SetD Libre+4, m3C         @VTC: direccion de m3C     
+        SetD Libre+5, VTB         @VTC: direccion de VTB    
+        SetLibre Libre+6                                 
+        SetActual Libre                                 
+%%%-----------------------------------------------------------------------------
+
+%%%-------------Codigo de Incializacion (Llamada a main)------------------------
+%%% Llama a main y finaliza
+        SetD Libre, pc+5          @PTR                        
+        SetD Libre+1, actual      @ED                        
+        SetActual Libre                                       
+        SetLibre Actual+6                                              % aca si sabes el tamano del RA porque main es static
+        Jump main                                            
+
+        Halt                                               
+%%%-----------------------------------------------------------------------------
+
+%%%--------------------Traduccion del constructor de la clase A-----------------
+consA   SetH D[Actual+2]+1, 1     @v1=1                   
+        SetH D[Actual+2]+2, 20    @v2=20                 
+        SetLibre Actual                                
+        SetActual D[Libre+1]                            
+        Jump D[Libre]                                 
+%%%-----------------------------------------------------------------------------
+
+%%%--------------------Traduccion de m1A de la clase A---------------------------
+m1A     SetLibre Libre+1                                               % debo incrementar libre para guardar la variable local? como sabe el llamador el tamanio del RA?
+        SetD Actual+3, 0                                                @i=0                
+for     JumpT fend, D[Actual+3] >= (H[D[Actual+2]+1]+H[D[Actual+2]+2])  @i>=v1+v2?
+        SetH D[Actual+2]+1, H[D[Actual+2]+1]+D[Actual+3]                @v1+=i
+        SetH D[Actual+2]+2, H[D[Actual+2]+2]-D[Actual+3]                @v2-=i
+        JumpT fend, (H[D[Actual+2]+1]+H[D[Actual+2]+2]) >= 100          @v1+v2>=100?
+        SetD Actual+3, D[Actual+3]+1                                    @++i
+        Jump for
+fend    SetD CRA, D[CRA]+1                                              @a1=a1+1
+
+        SetD Actual-1, (H[D[Actual+2]+1]+H[D[Actual+2]+2])              @rtn v1+v2
+        SetLibre Actual                                                             
+        SetActual D[Libre+1]                                            
+        Jump D[Libre]                                                   
+%%%-----------------------------------------------------------------------------
+
+
+%%%--------------------Traduccion de m1xA de la clase A--------------------------
+m1xA    SetD CRA, D[CRA]+1      @a1=a1+1
+        SetD Actual-1, D[CRA]   @rtn a1
+        SetLibre Actual                                                             
+        SetActual D[Libre+1]                                            
+        Jump D[Libre]                                                   
+%%%-----------------------------------------------------------------------------
+
+%%%--------------------Traduccion del constructor de la clase B-----------------
+    %% llamar a super (constructor de A)
+consB   SetD Libre, PC+6              @PTR
+        SetD Libre+1, Actual          @ED
+        SetD Libre+2, D[Actual+2]     @This
+        SetActual Libre
+        SetLibre Libre+3                             % este si sabe el tamanio de RA, si hubera variables locales en el constructor, quien incrementaria libre?
+        Jump consA
+    
+        SetH D[Actual+2]+3, D[CRA]*3  @v3=a1*3
+        SetLibre Actual
+        SetActual D[Libre+1]
+        Jump D[Libre]
+%%%-----------------------------------------------------------------------------
+
+%%%--------------------Traduccion de m1B de la clase B -----------------
+m1B     SetLibre Libre+1                             % debo incrementar libre? como sabe el llamador cuanto pesa el RA?
+        SetD Actual+3, 0                             @j=0  
+        JumpT case3, (D[CRA]>=1) & (D[CRA]<=3)
+        JumpT case6, (D[CRA]>=4) & (D[CRA]<=6)
+default SetD Actual+3, 1                             @j=1
+        Jump break
+case3   Setd Actual+3, (3*D[CRA])+1                  @j=3*a1+1
+        Jump break
+case6   Setd Actual+3, H[D[Actual+2]+1]+12           @j=v1+12
+
+     %% llamar a super.m1(j)
+break   SetLibre Libre+1              @rtn
+        SetD Libre, PC+7              @PTR
+        SetD Libre+1, Actual          @ED
+        SetD Libre+2, D[Actual+2]     @This
+        SetD Libre+3, D[Actual+3]     @j
+        SetActual Libre
+        SetLibre Libre+4                            % no se el tamanio del RA de super.m1(j)
+        Jump D[D[H[D[Actual+2]+0]+3]+1]             % salto a super.m1(j)
+
+        SetD Actual-1, D[Libre-1]     @rtn super.m1(j)
+        SetLibre Actual
+        SetActual D[Libre+1]
+        Jump D[Libre]
+%%%-----------------------------------------------------------------------------
+
+%%%--------------------Traduccion de m2B de la clase B --------------------------
+m2B     SetD CRA, D[CRA]+1           @a1=a1+1                        
+
+    %% llamar a super.m1()
+        SetD Libre, PC+6
+        SetD Libre+1, Actual
+        SetD Libre+2, D[Actual+2]
+        SetActual Libre
+        SetLibre Libre+3
+        Jump D[D[H[D[Actual+2]+0]+3]+0]            % salto a super.m1()
+
+    %% llamar a this.m1()
+        SetD Libre, PC+6
+        SetD Libre+1, Actual
+        SetD Libre+2, D[Actual+2]
+        SetActual Libre
+        SetLibre Libre+3
+        Jump D[H[D[Actual+2]+0]+0]                 % salto a this.m1
+
+        SetD Actual-1, (H[D[Actual+2]+3]+D[CRA]) + D[Libre-2] + D[Libre-1]     @rtn (v3+a1) + super.m1()+ this.m1();
+        SetLibre Actual
+        SetActual D[Libre+1]
+        Jump D[Libre]
+%%%-----------------------------------------------------------------------------
+
+%%%--------------------Traduccion del constructor de la clase C-----------------
+    %% llamar a super (constructor de B)
+consC   SetD Libre, PC+6              @PTR
+        SetD Libre+1, Actual                                        @ED
+        SetD Libre+2, D[Actual+2]                                   @This
+        SetActual Libre
+        SetLibre Libre+3                        % este si sabe el tamanio de RA, si hubera variables locales en el constructor, quien incrementaria libre?
+        Jump consB
+    
+        SetH D[Actual+2]+4, D[Actual+3]+1                           @v4=x+1
+        SetH D[Actual+2]+5, (H[D[Actual+2]+1]+H[D[Actual+2]+2])*3   @v5=(v1+v2)*3
+        
+    %% crear un objeto de tipo A
+        SetLabel o1, PO
+        SetH D[Actual+2]+6, PO                                      @o1=new A()
+        SetH PO, VTA                           % no hay otra forma de conocer a VTA no?
+        SetPo PO+3
+    
+    %% llamar al constructor de A
+        SetD Libre, PC+4
+        SetD Libre+1, Actual
+        SetD Libre+2, D[Actual+2]
+        SetLibre Libre+3
+        Jump ConsA
+
+        SetLibre Actual
+        SetActual D[Libre+1]
+        Jump D[Libre]
+%%%-----------------------------------------------------------------------------
+
+%%%--------------------Traduccion del método m1xC de la clase C-----------------
+m1xC    SetLibre Libre+1
+        SetD Actual+4, 5                          @t=5
+
+        JumpT r1, D[Actual+3] < 100
+        JumpT r1, D[Actual+3] <= (D[Actual+4]+1)
+
+        JumpT r2, (D[Actual+3] > 100) & (D[Actual+3] > D[Actual+4])
+    
+     %% return t*5
+r3      SetD Actual-1, D[Actual+4]*5              @rtn t*5
+        Jump r2+1
+
+    %% llamar a this.m3
+r1      SetD Libre, PC+4                          @PTR
+        SetD Libre+1, Actual                      @ED
+        SetD Libre+2, D[Actual+2]                 @This
+        Jump D[H[D[Actual+2]+0]+4]  
+
+    %% return t-x
+        SetD Actual-1, D[Actual+4]-D[Actual+5]    @rtn t-x
+        Jump r2+1
+
+    %% return t-x-1
+r2      SetD Actual-1, D[Actual+4]-D[Actual+5]-1  @rtn t-x-1
+
+        SetLibre Actual
+        SetActual D[Libre+1]
+        Jump D[Libre]
+%%%-----------------------------------------------------------------------------
+
+%%%--------------------Traduccion del método m2xC de la clase C-----------------
+m2xC    SetLibre Libre+4
+        SetD Actual+4, 0                          @aux1=0
+        SetD Actual+5, 0                          @aux2=0
+        SetD Actual+6, 0                          @j=0
+        SetD Actual+7, D[Actual+4]                @out=aux1
+
+while   JumpT wend, D[Actual+6] >= 30
+        SetD Actual+4, D[Actual+4] + D[Actual+3]  @aux1+=x
+        SetD Actual+5, D[Actual+5] + 3            @aux2+=3
+
+        JumpT wend, D[Actual+4] > 50
+        SetD Actual+5, D[Actual+5]+1              @aux2=aux2+1
+        SetD Actual+6, D[Actual+6]+1              @j=j+1
+        Jump while
+
+wend    JumpT PC+2, D[Actual+4] <= D[Actual+5] 
+        SetD Actual+7, D[Actual+5]                @out=aux2
+
+        SetD Actual-1, D[Actual+7]                @rtn out
+        SetLibre Actual
+        SetActual D[Libre+1]
+        Jump D[Libre]
+%%%-----------------------------------------------------------------------------
+
+%%%--------------------Traduccion del método m3C de la clase C-----------------
+    %% crear un objeto de tipo A
+m3C     SetLabel o1, PO                             
+        SetH D[Actual+2]+6, PO                      @o1=new A()
+        SetH PO, VTA
+        SetPO Po+3                   
+
+    %% llamar al constructor de A
+        SetD Libre, PC+4
+        SetD Libre+1, Actual
+        SetD Libre+2, D[Actual+2]
+        SetLibre Libre+3
+        Jump ConsA
+
+        SetLibre Actual
+        SetActual D[Libre+1]
+        Jump D[Libre]
+%%%-----------------------------------------------------------------------------
+
+%%%--------------------Traduccion de la clase Main------------------------------
+main    SetIn Actual+2               @read x1
+        SetIn Actual+3               @read x2        
+%%%-----------------------------------------------------------------------------
