@@ -7,7 +7,7 @@
 
 %%%--------------------Creacion de VTs------------------------------------------ 
 %%% Carga la VT de la clase Principal
-        SetLabel VTPrincipal, Libre                             
+        SetLabel VTPrincipal, Libre     @VTPrincipal
         SetLibre Libre+1                                        
         SetActual Libre                                        
 
@@ -130,17 +130,18 @@ break   SetLibre Libre+1              @rtn
 m2B     SetD CRA, D[CRA]+1           @a1=a1+1                        
 
     %% llamar a super.m1()
-        SetD Libre, PC+6
-        SetD Libre+1, Actual
-        SetD Libre+2, D[Actual+2]
+        SetD Libre, PC+7                                                       @PTR
+        SetD Libre+1, Actual                                                   @ED
+        SetD Libre+2, D[Actual+2]                                              @This
         SetActual Libre
         SetLibre Libre+3
+        SetOut D[D[H[D[Actual+2]+0]+3]+0]          % ESTOY DEBBUGEANDO POR ACA
         Jump D[D[H[D[Actual+2]+0]+3]+0]            % salto a super.m1()
 
     %% llamar a this.m1()
-        SetD Libre, PC+6
-        SetD Libre+1, Actual
-        SetD Libre+2, D[Actual+2]
+        SetD Libre, PC+6                                                       @PTR
+        SetD Libre+1, Actual                                                   @ED
+        SetD Libre+2, D[Actual+2]                                              @This
         SetActual Libre
         SetLibre Libre+3
         Jump D[H[D[Actual+2]+0]+0]                 % salto a this.m1
@@ -153,7 +154,7 @@ m2B     SetD CRA, D[CRA]+1           @a1=a1+1
 
 %%%--------------------Traduccion del constructor de la clase C-----------------
     %% llamar a super (constructor de B)
-consC   SetD Libre, PC+6              @PTR
+consC   SetD Libre, PC+6                                            @PTR
         SetD Libre+1, Actual                                        @ED
         SetD Libre+2, D[Actual+2]                                   @This
         SetActual Libre
@@ -166,13 +167,14 @@ consC   SetD Libre, PC+6              @PTR
     %% crear un objeto de tipo A
         SetLabel o1, PO
         SetH D[Actual+2]+6, PO                                      @o1=new A()
-        SetH PO, VTA                           % no hay otra forma de conocer a VTA no?
+        SetH PO, VTA                                                @VTA
         SetPo PO+3
     
     %% llamar al constructor de A
-        SetD Libre, PC+4
-        SetD Libre+1, Actual
-        SetD Libre+2, D[Actual+2]
+        SetD Libre, PC+6                                            @PTR
+        SetD Libre+1, Actual                                        @ED
+        SetD Libre+2, H[D[Actual+2]+6]                              @This
+        SetActual Libre
         SetLibre Libre+3
         Jump ConsA
 
@@ -195,17 +197,19 @@ r3      SetD Actual-1, D[Actual+4]*5              @rtn t*5
         Jump r2+1
 
     %% llamar a this.m3
-r1      SetD Libre, PC+4                          @PTR
+r1      SetD Libre, PC+6                          @PTR
         SetD Libre+1, Actual                      @ED
         SetD Libre+2, D[Actual+2]                 @This
+        SetActual Libre
+        SetLibre Libre+3
         Jump D[H[D[Actual+2]+0]+4]  
 
     %% return t-x
-        SetD Actual-1, D[Actual+4]-D[Actual+5]    @rtn t-x
+        SetD Actual-1, D[Actual+4]-D[Actual+3]    @rtn t-x
         Jump r2+1
 
     %% return t-x-1
-r2      SetD Actual-1, D[Actual+4]-D[Actual+5]-1  @rtn t-x-1
+r2      SetD Actual-1, D[Actual+4]-D[Actual+3]-1  @rtn t-x-1
 
         SetLibre Actual
         SetActual D[Libre+1]
@@ -239,15 +243,15 @@ wend    JumpT PC+2, D[Actual+4] <= D[Actual+5]
 
 %%%--------------------Traduccion del método m3C de la clase C-----------------
     %% crear un objeto de tipo A
-m3C     SetLabel o1, PO                             
-        SetH D[Actual+2]+6, PO                      @o1=new A()
-        SetH PO, VTA
+m3C     SetH D[Actual+2]+6, PO                      @o1=new A()
+        SetH PO, VTA                                @VTA
         SetPO Po+3                   
 
     %% llamar al constructor de A
-        SetD Libre, PC+4
-        SetD Libre+1, Actual
-        SetD Libre+2, D[Actual+2]
+        SetD Libre, PC+6                            @PTR
+        SetD Libre+1, Actual                        @ED
+        SetD Libre+2, H[D[Actual+2]+6]              @This
+        SetActual Libre
         SetLibre Libre+3
         Jump ConsA
 
@@ -257,6 +261,62 @@ m3C     SetLabel o1, PO
 %%%-----------------------------------------------------------------------------
 
 %%%--------------------Traduccion de la clase Main------------------------------
-main    SetIn Actual+2               @read x1
-        SetIn Actual+3               @read x2        
+main    SetIn Actual+3                                     @read x1
+        SetIn Actual+4                                     @read x2        
+
+    %% crear un objecto de tipo C
+        SetLabel oA, PO                             
+        SetD Actual+5, PO                                  @oA=new C()
+        SetH PO, VTC                                       @VTC
+        SetPO Po+7                   
+
+    %% llamar al constructor de C
+        SetD Libre, PC+7                                  @PTR
+        SetD Libre+1, Actual                              @ED
+        SetD Libre+2, oA                                  @This
+        SetD Libre+3, D[Actual+3]+D[Actual+4]             @x1+x2
+        SetActual Libre
+        SetLibre Libre+4
+        Jump ConsC
+
+    %% llamar a oA.m1(x1*x2)
+        SetLibre Libre+1
+        SetD Libre, PC+7                                  @PTR
+        SetD Libre+1, Actual                              @ED
+        SetD Libre+2, oA                                  @This
+        SetD Libre+3, D[Actual+3]*D[Actual+4]             @x1*x2
+        SetActual Libre
+        SetLibre Libre+4
+        Jump D[H[oA+0]+1]
+
+    %% imprimir el resultado
+        SetOut D[Libre-1]
+        SetLibre Libre-1
+
+    %% llamar a oA.m2()
+        SetLibre Libre+1
+        SetD Libre, PC+6                                  @PTR
+        SetD Libre+1, Actual                              @ED
+        SetD Libre+2, oA                                  @This
+        SetActual Libre
+        SetLibre Libre+3
+        Jump D[H[oA+0]+2]
+
+    %% llamar a oA.m2(x1)
+        SetLibre Libre+1
+        SetD Libre, PC+7                                  @PTR
+        SetD Libre+1, Actual                              @ED
+        SetD Libre+2, oA                                  @This
+        SetD Libre+3, D[Actual+3]                         @x1
+        SetActual Libre
+        SetLibre Libre+4
+        Jump D[H[oA+0]+3]
+
+    %% imprimir el resultado de oA.m2() + oA.m2(x1)
+        SetOut D[Libre-2] + D[Libre-1]
+        SetLibre Libre-2
+
+        SetLibre Actual
+        SetActual D[Libre+1]
+        Jump D[Libre]
 %%%-----------------------------------------------------------------------------
