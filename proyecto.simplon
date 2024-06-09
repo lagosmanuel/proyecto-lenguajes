@@ -53,6 +53,7 @@
 %%%--------------------Traduccion del constructor de la clase A-----------------
 consA   SetH D[Actual+2]+1, 1     @v1=1                   
         SetH D[Actual+2]+2, 20    @v2=20                 
+
         SetLibre Actual                                
         SetActual D[Libre+1]                            
         Jump D[Libre]                                 
@@ -78,6 +79,7 @@ fend    SetD CRA, D[CRA]+1                                              @a1=a1+1
 
 %%%--------------------Traduccion de m1xA de la clase A--------------------------
 m1xA    SetD CRA, D[CRA]+1      @a1=a1+1
+
         SetD Actual-1, D[CRA]   @rtn a1
         SetLibre Actual                                                             
         SetActual D[Libre+1]                                            
@@ -94,6 +96,7 @@ consB   SetD Libre, PC+6              @PTR
         Jump consA
     
         SetH D[Actual+2]+3, D[CRA]*3  @v3=a1*3
+
         SetLibre Actual
         SetActual D[Libre+1]
         Jump D[Libre]
@@ -118,7 +121,7 @@ break   SetLibre Libre+1              @rtn
         SetD Libre+3, D[Actual+3]     @x=j
         SetActual Libre
         SetLibre Libre+4                            
-        Jump D[VTA+1]             % salto a super.m1(j)
+        Jump D[VTA+1] 
 
         SetD Actual-1, D[Libre-1]     @rtn super.m1(j)
         SetLibre Actual
@@ -140,7 +143,7 @@ m2B     SetD CRA, D[CRA]+1                                                     @
         SetD Libre+2, D[Actual+2]                                              @This
         SetActual Libre
         SetLibre Libre+3
-        Jump D[VTA+0]            % salto a super.m1()
+        Jump D[VTA+0]
 
     %% llamar a this.m1()
         SetLibre Libre+1                                                       @rtn2
@@ -149,7 +152,7 @@ m2B     SetD CRA, D[CRA]+1                                                     @
         SetD Libre+2, D[Actual+2]                                              @This
         SetActual Libre
         SetLibre Libre+3
-        Jump D[H[D[Actual+2]+0]+0]                 % salto a this.m1
+        Jump D[H[D[Actual+2]+0]+0]
 
         SetD Actual-1, D[Libre-3] + D[Libre-2] + D[Libre-1]                    @rtn (v3+a1) + super.m1()+ this.m1();
         SetLibre Actual
