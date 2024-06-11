@@ -1,0 +1,100 @@
+%%%--------------------Creacion de VTs------------------------------------------ 
+%%% Carga la VT de la clase Principal
+        SetLabel VTPrincipal, Libre     @VTPrincipal
+        SetLibre Libre+1                                        
+        SetActual Libre                                        
+
+%%% Carga la VT de la clase A
+        SetLabel VTA, Libre                                   
+        SetD Libre+0, m1                @VTA: direccion de m1
+        SetLibre Libre+1                                   
+        SetActual Libre                                   
+%%%-----------------------------------------------------------------------------
+
+%%%-------------Codigo de Incializacion (Llamada a main)------------------------
+%%% Llama a main y finaliza
+        SetD Libre, PC+5          @PTR                        
+        SetD Libre+1, Actual      @ED                        
+        SetActual Libre                                       
+        SetLibre Actual+4
+        Jump main                                            
+
+        Halt                                               
+%%%-----------------------------------------------------------------------------
+
+%%%--------------------Traduccion del constructor de la clase A-----------------
+ConsA   SetH D[Actual+2]+1, 1                                @v1[0]=1
+        SetH D[Actual+2]+2, 2                                @v1[1]=2
+        SetH D[Actual+2]+3, 3                                @v1[2]=3
+        SetH D[Actual+2]+4, 4                                @v1[3]=4
+        SetH D[Actual+2]+5, 5                                @v1[4]=5
+
+        SetLibre Actual                                
+        SetActual D[Libre+1]                            
+        Jump D[Libre]                                 
+%%%-----------------------------------------------------------------------------
+
+
+%%%--------------------Traduccion del me'todo m1 de la clase A-----------------
+m1      SetLibre libre+1                                   
+        SetD Actual+3, 0                                    @int suma=0
+
+        SetLibre libre+1                                   
+        SetD Actual+4, 0                                    @int i=0
+
+    %% condicion del for
+for     JumpT fend, D[Actual+4] >= 5
+
+    %% chequear indice
+        JumpT error, D[Actual+4] < 0 | D[Actual+4] > 4
+
+    %% cuerpo del for
+        SetD Actual+3, D[Actual+3] + H[D[Actual+2]+1+D[Actual+4]] @suma=suma+i
+        SetD Actual+4, D[Actual+4]+1                              @i++
+        Jump for
+
+fend    SetD actual-1, D[Actual+3]
+        SetLibre Actual                                
+        SetActual D[Libre+1]                            
+        Jump D[Libre]                                 
+%%%-----------------------------------------------------------------------------
+
+%%%--------------------Traduccion de la clase Main------------------------------
+
+    %% declarar variable obj de tipo A
+main    SetD Actual+3, 0
+
+    %% crear objeto de tipo A
+        SetD Actual+3, PO                                  @obj=new A()
+        SetH PO, VTA                                       @VTA
+        SetPO PO+6
+    
+    %% llamar al constructor de A
+        SetD Libre, PC+6                                   @PTR
+        SetD Libre+1, Actual                               @ED
+        SetD Libre+2, D[Actual+3]                          @This
+        SetActual Libre
+        SetLibre Libre+3
+        Jump ConsA
+
+    %% llamar a oA.m1()
+        SetLibre Libre+1                                   @rtn
+        SetD Libre, PC+6                                   @PTR
+        SetD Libre+1, Actual                               @ED
+        SetD Libre+2, D[Actual+3]                          @This
+        SetActual Libre
+        SetLibre Libre+3
+        Jump D[H[D[Actual+2]+0]+0]
+    
+        SetOut D[Libre-1]
+        SetLibre Libre-1
+    
+        SetLibre Actual
+        SetActual D[Libre+1]
+        Jump D[Libre]
+%%%-----------------------------------------------------------------------------
+
+%%%-----------------------------------------------------------------------------
+error   SetOut 1
+        halt
+%%%-----------------------------------------------------------------------------
