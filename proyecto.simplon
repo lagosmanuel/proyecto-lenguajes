@@ -201,7 +201,7 @@ m1xC    SetLibre Libre+1
     
      %% return t*5
 r3      SetD Actual-1, D[Actual+4]*5              @rtn t*5
-        Jump r2+1
+        Jump rend
 
     %% llamar a this.m3
 r1      SetD Libre, PC+6                          @PTR
@@ -213,12 +213,12 @@ r1      SetD Libre, PC+6                          @PTR
 
     %% return t-x
         SetD Actual-1, D[Actual+4]-D[Actual+3]    @rtn t-x
-        Jump r2+1
+        Jump rend
 
     %% return t-x-1
 r2      SetD Actual-1, D[Actual+4]-D[Actual+3]-1  @rtn t-x-1
 
-        SetLibre Actual
+rend    SetLibre Actual
         SetActual D[Libre+1]
         Jump D[Libre]
 %%%-----------------------------------------------------------------------------
