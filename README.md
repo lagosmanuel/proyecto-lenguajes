@@ -2,7 +2,7 @@
 
 ## Descripción
 
-Este proyecto tiene como objetivo estudiar técnicas de implementación para mecanismos y constructores provistos por un lenguaje orientado a objetos utilizando Java como lenguaje fuente y SimpleSem como lenguaje destino. SimpleSem es un lenguaje desarrollado por la cátedra, similar a assembly, diseñado para enseñar la traducción de programas. Su propósito es proporcionar una base simplificada para el estudio de la implementación de lenguajes orientados a objetos.
+Este proyecto tiene como objetivo estudiar técnicas de implementación para mecanismos y constructores provistos por un lenguaje orientado a objetos utilizando Java como lenguaje fuente y SimpleSem como lenguaje destino. SimpleSem es un lenguaje desarrollado por la cátedra, similar a assembly, diseñado para enseñar la traducción de programas. Su propósito es proporcionar una base simplificada para el estudio de la implementación de lenguajes orientados a objetos. Para más información sobre el lenguaje SimpleSem, se puede consultar el [Manual de Usuario de SimpleSem](https://github.com/lagosmanuel/proyecto-lenguajes/blob/main/simplesem-manual.pdf) que ofrece una guía detallada sobre la sintaxis y el uso de este lenguaje.
 
 ## Objetivo del Proyecto
 
