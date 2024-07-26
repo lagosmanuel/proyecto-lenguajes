@@ -1,24 +1,23 @@
-# Java to SimpleSem Translation Project
+# Proyecto de Traducción Java a SimpleSem
 
-## Description
+## Descripción
 
-This project aims to study implementation techniques for mechanisms and constructors provided by an object-oriented language using Java as the source language and SimpleSem as the target language. SimpleSem is a language developed by the course, similar to assembly, designed to teach program translation. Its purpose is to provide a simplified foundation for studying the implementation of object-oriented languages. For more information on SimpleSem, refer to the [SimpleSem User Manual (spanish)](https://github.com/lagosmanuel/proyecto-lenguajes/blob/main/simplesem-manual.pdf), which offers a detailed guide on the syntax and usage of this language.
+Este proyecto tiene como objetivo estudiar técnicas de implementación para mecanismos y constructores provistos por un lenguaje orientado a objetos utilizando Java como lenguaje fuente y SimpleSem como lenguaje destino. SimpleSem es un lenguaje desarrollado por la cátedra, similar a assembly, diseñado para enseñar la traducción de programas. Su propósito es proporcionar una base simplificada para el estudio de la implementación de lenguajes orientados a objetos. Para más información sobre el lenguaje SimpleSem, se puede consultar el [Manual de Usuario de SimpleSem](https://github.com/lagosmanuel/proyecto-lenguajes/blob/main/simplesem-manual.pdf) que ofrece una guía detallada sobre la sintaxis y el uso de este lenguaje.
 
-## Project Objective
+## Objetivo del Proyecto
 
-The project focuses on translating Java code to SimpleSem, ensuring that the behavior of the original program is faithfully preserved in the translated version.
+El proyecto se centra en traducir código Java a SimpleSem, asegurando que el comportamiento del programa original se mantenga fiel en la versión traducida.
+## Estructura del Proyecto
 
-## Project Structure
+1. **Traducción de Código:**
+   - Traducción de código Java a SimpleSem.
+   - En el repositorio se encuentran los archivos .simplon de la traducción.
 
-1. **Code Translation:**
-   - Translation of Java code to SimpleSem.
-   - The repository contains the `.simplon` files of the translation.
+## Código de las Clases Java
 
-## Java Class Code
+A continuación se muestra el código de las clases que se deben traducir:
 
-Below is the code of the classes that need to be translated:
-
-### Class `A.java`
+### Clase `A.java`
 
 ```java
 public class A {
@@ -53,7 +52,7 @@ public class A {
 
 ```
 
-### Class `B.java`
+### Clase `B.java`
 
 ```java
 public class B extends A {
@@ -95,7 +94,7 @@ public class B extends A {
 
 ```
 
-### Class `C.java`
+### Clase `C.java`
 
 ```java
 public class C extends B {
@@ -157,26 +156,25 @@ public class C extends B {
 }
 
 ```
+Estas no se deben traducir:
 
-These classes should not be translated:
-
-### Class `Sistema.java`
+### Clase `Sistema.java`
 
 ```java
 import java.util.Scanner;
 
 public class Sistema {
-    // THIS CLASS SHOULD NOT BE TRANSLATED! It was created for internal testing
+    // ESTA CLASE NO HAY QUE TRADUCIRLA! fue creada para testeo interno
     static Scanner input = new Scanner(System.in);
     
-    /* THIS METHOD DOES NOT NEED TO BE IMPLEMENTED!!!! Assume that when it is
-    used, it is translated using a SetOUT of SimpleSem */
+    /* ESTE METODO NO ES NECESARIO IMPLEMENTARSE!!!! asuma que cuando es
+    utilizado se traduce usando un SetOUT de SimpleSem */
     public static void print(int p){
         System.out.println(p);
     }
 
-    /* THIS METHOD DOES NOT NEED TO BE IMPLEMENTED!!!! Assume that when it is
-    used, it is translated using a SetIN of SimpleSem */
+    /* ESTE METODO NO ES NECESARIO IMPLEMENTARSE!!!! asuma que cuando es
+    utilizado se traduce usando un SetIN de SimpleSem */
     public static int read(){
         return input.nextInt();
     }
@@ -184,7 +182,7 @@ public class Sistema {
 
 ```
 
-### Class `Principal.java`
+### Clase `Principal.java`
 
 ```java
 public class Principal {
@@ -200,13 +198,13 @@ public class Principal {
 }
 ```
 
-## Additional Exercises
+## Ejercicios Adicionales
 
-The statement includes optional exercises that may improve the grade or the final exam evaluation. The optional exercises along with the corresponding Java classes are detailed below:
+El enunciado incluye ejercicios opcionales que pueden significar una mejora en la nota de promoción o en la evaluación del examen final. A continuación se detallan estos ejercicios opcionales junto con las clases Java correspondientes:
 
-### Optional Exercise a: Null Reference Control
+### Ejercicio Opcional a: Control de Referencias Nulas
 
-#### Class `ControlNulo.java`
+#### Clase `ControlNulo.java`
 
 ```java
 public class Principal {
@@ -235,9 +233,9 @@ public class A {
 }
 ```
 
-### Optional Exercise b: Conditional Assignment
+### Ejercicio Opcional b: Asignación Condicional
 
-#### Class `AsignacionCondicional.java`
+#### Clase `AsignacionCondicional.java`
 
 ```java
 public class Principal {
@@ -265,9 +263,9 @@ public class A {
 
 ```
 
-### Optional Exercise c: Chained Calls
+### Ejercicio Opcional c: Llamadas Encadenadas
 
-#### Class `LlamadasEncadenadas.java`
+#### Clase `LlamadasEncadenadas.java`
 
 ```java
 
@@ -309,9 +307,9 @@ public class B {
 
 ```
 
-### Optional Exercise d: Array Integration
+### Ejercicio Opcional d: Incorporación de Arreglos
 
-#### Class `Arreglos.java`
+#### Clase `Arreglos.java`
 
 ```java
 public class Principal {
@@ -344,6 +342,6 @@ public class A {
 
 ```
 
-## License
+## Licencia
 
-This project is licensed under the GNU General Public License (GPL). See the [LICENSE](LICENSE) file for more details.
+Este proyecto está licenciado bajo la Licencia Pública General de GNU (GPL). Consulta el archivo [LICENSE](LICENSE) para más detalles.
